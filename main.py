@@ -64,11 +64,13 @@ class Hero(GameSprite):
 
 ball = Ball(315, 230, 75, 50, 'ball.png')
 
-rocket1 = Hero(50, 350, 3,15,100)
+rocket1 = Hero(50, 260, 3,15,100)
 rocket2 = Hero(650, 150, 3,15,100)
 
+ball_update = True
+
 speed_x = random.choice([-3, 3])
-speed_y = random.choice([-3, 3])
+speed_y = -3
 
 game = True
 while game:
@@ -84,22 +86,50 @@ while game:
     rocket2.reset()
     rocket2.update_r()
 
-    ball.reset()
+    if ball_update:
+        ball.reset()
 
-    #ball update ____________________________________________________
-    if pygame.sprite.collide_rect(ball, rocket1) or pygame.sprite.collide_rect(ball, rocket2):
-        speed_x *= -1
-    elif ball.rect.y <= top_border or ball.rect.y >= bottom_border:
-        speed_y *= -1
-    elif ball.rect.x <= 0 or ball.rect.x >= 700:
-        ball.rect.x = 315
-        ball.rect.y = 230
-    ball.rect.x += speed_x
-    ball.rect.y += speed_y
-    #________________________________________________________________
+        #ball update ____________________________________________________
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
 
-    text_scores = font1.render('Счет - ' + str(scores_r)+' : ' + str(scores_l), 1, (0, 0, 0))
+        if pygame.sprite.collide_rect(ball, rocket1) or pygame.sprite.collide_rect(ball, rocket2):
+            speed_x *= -1
+            if speed_x > 0:
+                speed_x += 0.1
+            else:
+                speed_x -= 0.1
+            if speed_y > 0:
+                speed_y += 0.1
+            else:
+                speed_y -= 0.1
+        if ball.rect.y <= top_border or ball.rect.y >= bottom_border:
+            speed_y *= -1
+        if ball.rect.x <= 0:
+            scores_r += 1
+            ball.rect.x = 315
+            ball.rect.y = 230
+            speed_x = random.choice([-3, 3])
+            speed_y = -3
+        elif ball.rect.x >= 700:
+            scores_l += 1
+            ball.rect.x = 315
+            ball.rect.y = 230
+            speed_x = random.choice([-3, 3])
+            speed_y = -3
+        #________________________________________________________________
+
+    text_scores = font1.render('Счет - ' + str(scores_l)+' : ' + str(scores_r), 1, (0, 0, 0))
     window.blit(text_scores, (100, 25))
+
+    if scores_l >= 10:
+        ball_update = False
+        text_win = font1.render('Выиграл Игрок WASD',3, (255, 255, 255))
+        window.blit(text_win, (200, 230))
+    elif scores_r >= 10:
+        ball_update = False
+        text_win = font1.render('Выиграл Игрок Стрелочка', 3, (255, 255, 255))
+        window.blit(text_win, (165, 230))
 
     pygame.display.update()
     clock.tick(fps)
