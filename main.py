@@ -69,6 +69,9 @@ rocket2 = Hero(650, 150, 3,15,100)
 
 ball_update = True
 
+time = 50
+time_border = 50
+
 speed_x = random.choice([-3, 3])
 speed_y = -3
 
@@ -93,7 +96,8 @@ while game:
         ball.rect.x += speed_x
         ball.rect.y += speed_y
 
-        if pygame.sprite.collide_rect(ball, rocket1) or pygame.sprite.collide_rect(ball, rocket2):
+        if pygame.sprite.collide_rect(ball, rocket1) and time >= 50 or pygame.sprite.collide_rect(ball, rocket2) and time >= 50:
+            time = 0
             speed_x *= -1
             if speed_x > 0:
                 speed_x += 0.1
@@ -103,7 +107,8 @@ while game:
                 speed_y += 0.1
             else:
                 speed_y -= 0.1
-        if ball.rect.y <= top_border or ball.rect.y >= bottom_border:
+        if ball.rect.y <= top_border and time_border >= 50 or ball.rect.y >= bottom_border and time_border >= 50:
+            time_border = 0
             speed_y *= -1
         if ball.rect.x <= 0:
             scores_r += 1
@@ -133,3 +138,6 @@ while game:
 
     pygame.display.update()
     clock.tick(fps)
+
+    time += 1
+    time_border += 1
